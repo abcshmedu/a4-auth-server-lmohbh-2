@@ -21,11 +21,11 @@
 	</servlet-mapping>
 
      <servlet>
-      <servlet-name>Media Resource</servlet-name>
+      <servlet-name>AuthenticationServer</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>  
 		  <param-name>jersey.config.server.provider.packages</param-name>  
-	     <param-value>edu.hm.shareit.resources</param-value>
+	     <param-value>edu.hm.api</param-value>
 	     </init-param>
 		<init-param>
 		  <param-name>jersey.config.server.provider.classnames</param-name>
@@ -35,7 +35,7 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>Media Resource</servlet-name>
-		<url-pattern>/shareit/*</url-pattern>
+		<servlet-name>AuthenticationServer</servlet-name>
+		<url-pattern>/auth/*</url-pattern>
 	</servlet-mapping>
 </web-app>
