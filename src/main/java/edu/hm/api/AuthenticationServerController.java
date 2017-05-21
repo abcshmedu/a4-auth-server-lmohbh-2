@@ -32,8 +32,8 @@ public class AuthenticationServerController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getToken(User userToAccess)
     {
-        AuthenticationServerResult result = authService.createToken(userToAccess);
-        return Response.status(result.getStatus()).entity(result.getMessage()).build();
+        String token = authService.createToken(userToAccess);
+        return Response.status(200).entity(token).build();
     }
 
     @GET
@@ -51,5 +51,4 @@ public class AuthenticationServerController {
         AuthenticationServerResult result = authService.invalidateToken(token);
         return Response.status(result.getStatus()).entity(result.getMessage()).build();
     }
-
 }

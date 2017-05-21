@@ -5,13 +5,14 @@ package edu.hm.api;/*
  * with IntelliJ IDEA 2017.1.1
  *
  */
-
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.Verification;
 import edu.hm.entities.User;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,15 @@ public class AuthenticationServerService implements AuthenticationServer {
 
     @Override
     public AuthenticationServerResult validateToken(String token) {
+        Algorithm algorithm = null;
+        try {
+            algorithm = Algorithm.HMAC256(SECRET);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        JWTVerifier jwtVerifier = JWT.require(algorithm).acceptLeeway(5).build();
+        DecodedJWT decodedJWT = jwtVerifier.verify(token);
+
         return null;
     }
 
