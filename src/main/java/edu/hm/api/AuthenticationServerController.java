@@ -5,7 +5,6 @@ package edu.hm.api; /*
  * with IntelliJ IDEA 2017.1.1
  */
 
-import edu.hm.entities.User;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -32,8 +31,8 @@ public class AuthenticationServerController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getToken(User userToAccess)
     {
-        String token = authService.createToken(userToAccess);
-        return Response.status(200).entity(token).build();
+        AuthenticationServerResult result = authService.createToken(userToAccess);
+        return Response.status(result.getStatus()).entity(result.getPayload()).build();
     }
 
     @GET

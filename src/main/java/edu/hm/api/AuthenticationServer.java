@@ -6,13 +6,11 @@ package edu.hm.api;/*
  *
  */
 
-import edu.hm.entities.User;
-
 public interface AuthenticationServer {
 
     AuthenticationServerResult createUser(User userToCreate);
 
-    String createToken(User userToAccess);
+    AuthenticationServerResult createToken(User userToAccess);
 
     AuthenticationServerResult validateToken(String token);
 

@@ -8,9 +8,9 @@ package edu.hm.api;/*
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
-import edu.hm.entities.User;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -24,24 +24,55 @@ public class AuthenticationServerService implements AuthenticationServer {
     @Override
     public AuthenticationServerResult createUser(User userToCreate) {
         //TODO: check for valid user (user name not given, username and password not empty...)
+        if (userToCreate.getUsername().equals("") | userToCreate.getUsername().equals(""))
+        {
+            return AuthenticationServerResult.UserOrPasswordMissing;
+        }
+
+        if (DATA_STORAGE.keySet().stream()
+                .map(User::getUsername)
+                .filter(un -> un.equals(userToCreate.getUsername()))
+                .count() != 0)
+        {
+            return AuthenticationServerResult.UserAlreadyExists;
+        }
+
         DATA_STORAGE.put(userToCreate,null);
-        return null;
+        return AuthenticationServerResult.AllRight;
     }
 
     @Override
-    public String createToken(User userToAccess) {
+    public AuthenticationServerResult createToken(User userToAccess) {
         //https://github.com/auth0/java-jwt
-        Algorithm algorithm = null;
+        if (userToAccess.getUsername().equals("") | userToAccess.getUsername().equals(""))
+        {
+            return AuthenticationServerResult.UserOrPasswordMissing;
+        }
 
+        if (DATA_STORAGE.keySet().stream()
+                .filter(u -> u.getUsername().equals(userToAccess.getUsername())).count() == 0)
+            return AuthenticationServerResult.UserNotExisting;
+
+        if(DATA_STORAGE.keySet().stream()
+                .filter(u -> u.getUsername().equals(userToAccess.getUsername()))
+                .map(User::getPassword)
+                .filter(u -> u.equals(userToAccess.getPassword()))
+                .count() == 0)
+            return AuthenticationServerResult.InvalidPassword;
+
+        Algorithm algorithm = null;
+        //TODO: check if valid user
         try {
             algorithm = Algorithm.HMAC256(SECRET);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 
-        return JWT.create()
+        String token = JWT.create()
                 .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 1000))
                 .sign(algorithm);
+        DATA_STORAGE.put(userToAccess,token);
+        return AuthenticationServerResult.Validated.setPayload(token);
     }
 
     @Override
@@ -52,10 +83,23 @@ public class AuthenticationServerService implements AuthenticationServer {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        JWTVerifier jwtVerifier = JWT.require(algorithm).acceptLeeway(5).build();
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
-        return null;
+        JWTVerifier jwtVerifier = JWT.require(algorithm).acceptLeeway(5).build();
+        try {
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
+            System.out.println(decodedJWT.getSignature());
+
+        } catch(TokenExpiredException teE)
+        {
+            return AuthenticationServerResult.TokenExpired;
+
+        } catch(JWTVerificationException jve)
+        {
+            return AuthenticationServerResult.NoValidToken;
+        }
+
+        //valid signiture
+        return AuthenticationServerResult.Validated;
     }
 
     @Override

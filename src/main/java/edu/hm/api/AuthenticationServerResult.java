@@ -9,11 +9,18 @@ package edu.hm.api;/*
 import javax.ws.rs.core.Response;
 
 public enum AuthenticationServerResult {
-    AllRight("Your request was correct. Like that!", Response.Status.OK);
+    AllRight("Your request was correct. Like that!", Response.Status.OK),
+    TokenExpired("Token expired",Response.Status.BAD_REQUEST),
+    NoValidToken("No valid token.",Response.Status.BAD_REQUEST),
+    Validated("Validated",Response.Status.OK),
+    UserAlreadyExists("User already exists",Response.Status.BAD_REQUEST),
+    UserOrPasswordMissing("Username or password missing", Response.Status.BAD_REQUEST),
+    UserNotExisting("User with username not existing",Response.Status.BAD_REQUEST),
+    InvalidPassword("Invalid Password",Response.Status.BAD_REQUEST);
 
     private final String message;
     private final Response.Status status;
-
+    private String payload;
     /**
      * Creates new Result with a message and status.
      * @param message message describing why this response is appearing
@@ -22,6 +29,7 @@ public enum AuthenticationServerResult {
     AuthenticationServerResult(String message, Response.Status status) {
         this.message = message;
         this.status = status;
+        this.payload = "";
     }
 
     /**
@@ -43,5 +51,14 @@ public enum AuthenticationServerResult {
     @Override
     public String toString() {
         return this.message;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public AuthenticationServerResult setPayload(String payload) {
+        this.payload = payload;
+        return this;
     }
 }
