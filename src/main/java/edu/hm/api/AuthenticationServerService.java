@@ -12,10 +12,14 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import javax.xml.crypto.Data;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AuthenticationServerService implements AuthenticationServer {
     public static Map<User,String> DATA_STORAGE = new HashMap<>();
@@ -23,7 +27,6 @@ public class AuthenticationServerService implements AuthenticationServer {
 
     @Override
     public AuthenticationServerResult createUser(User userToCreate) {
-        //TODO: check for valid user (user name not given, username and password not empty...)
         if (userToCreate.getUsername().equals("") | userToCreate.getUsername().equals(""))
         {
             return AuthenticationServerResult.UserOrPasswordMissing;
@@ -61,7 +64,6 @@ public class AuthenticationServerService implements AuthenticationServer {
             return AuthenticationServerResult.InvalidPassword;
 
         Algorithm algorithm = null;
-        //TODO: check if valid user
         try {
             algorithm = Algorithm.HMAC256(SECRET);
         } catch (UnsupportedEncodingException e) {
@@ -69,14 +71,21 @@ public class AuthenticationServerService implements AuthenticationServer {
         }
 
         String token = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 1000))
                 .sign(algorithm);
-        DATA_STORAGE.put(userToAccess,token);
+        DATA_STORAGE.replace(userToAccess,token);
+
         return AuthenticationServerResult.Validated.setPayload(token);
     }
 
     @Override
     public AuthenticationServerResult validateToken(String token) {
+        if (token == null)
+            return AuthenticationServerResult.EmptyToken;
+
+        if (DATA_STORAGE.entrySet().stream().filter(es -> es.getValue().equals(token)).count() == 0)
+            return AuthenticationServerResult.NoValidToken;
+
         Algorithm algorithm = null;
         try {
             algorithm = Algorithm.HMAC256(SECRET);
@@ -103,7 +112,22 @@ public class AuthenticationServerService implements AuthenticationServer {
     }
 
     @Override
-    public AuthenticationServerResult invalidateToken(String token) {
-        return null;
+    public AuthenticationServerResult invalidateToken(String token)
+    {
+        if (token == null)
+            return AuthenticationServerResult.EmptyToken;
+
+        final Set<Map.Entry<User, String>> dataStorageSet =
+                DATA_STORAGE.entrySet().stream()
+                        .filter(ue -> token.equals(ue.getValue()))
+                        .collect(Collectors.toSet());
+
+        if (dataStorageSet.size() == 0)
+            return AuthenticationServerResult.NoValidToken;
+        else {
+            DATA_STORAGE.replace(dataStorageSet.stream().map(ue -> ue.getKey()).findFirst().get(), null);
+            return AuthenticationServerResult.TokenInvalidated;
+        }
+
     }
 }

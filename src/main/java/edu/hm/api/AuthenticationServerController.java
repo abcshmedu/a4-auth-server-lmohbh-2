@@ -5,11 +5,13 @@ package edu.hm.api; /*
  * with IntelliJ IDEA 2017.1.1
  */
 
+import org.json.JSONObject;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("auth")
+@Path("a4")
 public class AuthenticationServerController {
     private final AuthenticationServerService authService;
 
@@ -23,7 +25,7 @@ public class AuthenticationServerController {
     public Response createUser(User userToCreate)
     {
         AuthenticationServerResult result = authService.createUser(userToCreate);
-        return Response.status(result.getStatus()).entity(result.getMessage()).build();
+        return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }
 
     @POST
@@ -32,7 +34,7 @@ public class AuthenticationServerController {
     public Response getToken(User userToAccess)
     {
         AuthenticationServerResult result = authService.createToken(userToAccess);
-        return Response.status(result.getStatus()).entity(result.getPayload()).build();
+        return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }
 
     @GET
@@ -40,7 +42,7 @@ public class AuthenticationServerController {
     public Response validateToken(@HeaderParam("Authorization") String token)
     {
         AuthenticationServerResult result = authService.validateToken(token);
-        return Response.status(result.getStatus()).entity(result.getMessage()).build();
+        return Response.status(200).entity(result.toJSONString()).build();
     }
 
     @PUT
@@ -48,6 +50,6 @@ public class AuthenticationServerController {
     public Response invalidateToken(@HeaderParam("Authorization") String token)
     {
         AuthenticationServerResult result = authService.invalidateToken(token);
-        return Response.status(result.getStatus()).entity(result.getMessage()).build();
+        return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }
 }

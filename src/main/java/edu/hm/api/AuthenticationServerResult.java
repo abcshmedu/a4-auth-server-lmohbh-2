@@ -6,6 +6,8 @@ package edu.hm.api;/*
  *
  */
 
+import org.json.JSONObject;
+
 import javax.ws.rs.core.Response;
 
 public enum AuthenticationServerResult {
@@ -16,7 +18,9 @@ public enum AuthenticationServerResult {
     UserAlreadyExists("User already exists",Response.Status.BAD_REQUEST),
     UserOrPasswordMissing("Username or password missing", Response.Status.BAD_REQUEST),
     UserNotExisting("User with username not existing",Response.Status.BAD_REQUEST),
-    InvalidPassword("Invalid Password",Response.Status.BAD_REQUEST);
+    InvalidPassword("Invalid Password",Response.Status.BAD_REQUEST),
+    EmptyToken("No Token in Header, expected Header field: Authorization: <Token>",Response.Status.BAD_REQUEST),
+    TokenInvalidated("Successfully invalidated",Response.Status.OK);
 
     private final String message;
     private final Response.Status status;
@@ -51,6 +55,13 @@ public enum AuthenticationServerResult {
     @Override
     public String toString() {
         return this.message;
+    }
+
+    public String toJSONString() {
+        return new JSONObject()
+                .put("Status",this.getStatus().getStatusCode())
+                .put("Message",this.getMessage())
+                .put("Payload",this.getPayload()).toString();
     }
 
     public String getPayload() {
