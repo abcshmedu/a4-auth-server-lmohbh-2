@@ -40,5 +40,4 @@ public class UserTest {
         user.setPassword("testpassword123");
         assertTrue(user.equalsHashedPassword("testpassword123"));
     }
-
 }
