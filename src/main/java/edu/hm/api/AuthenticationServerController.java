@@ -5,8 +5,6 @@ package edu.hm.api; /*
  * with IntelliJ IDEA 2017.1.1
  */
 
-import org.json.JSONObject;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

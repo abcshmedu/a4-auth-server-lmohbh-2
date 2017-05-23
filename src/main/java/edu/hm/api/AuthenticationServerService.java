@@ -12,14 +12,12 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import javax.xml.crypto.Data;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AuthenticationServerService implements AuthenticationServer {
     public static Map<User,String> DATA_STORAGE = new HashMap<>();
@@ -58,8 +56,7 @@ public class AuthenticationServerService implements AuthenticationServer {
 
         if(DATA_STORAGE.keySet().stream()
                 .filter(u -> u.getUsername().equals(userToAccess.getUsername()))
-                .map(User::getPassword)
-                .filter(u -> u.equals(userToAccess.getPassword()))
+                .filter(u -> u.equalsHashedPassword(userToAccess.getPassword()))
                 .count() == 0)
             return AuthenticationServerResult.InvalidPassword;
 
@@ -125,7 +122,7 @@ public class AuthenticationServerService implements AuthenticationServer {
         if (dataStorageSet.size() == 0)
             return AuthenticationServerResult.NoValidToken;
         else {
-            DATA_STORAGE.replace(dataStorageSet.stream().map(ue -> ue.getKey()).findFirst().get(), null);
+            DATA_STORAGE.replace(dataStorageSet.stream().map(Map.Entry::getKey).findFirst().get(), null);
             return AuthenticationServerResult.TokenInvalidated;
         }
 

@@ -5,9 +5,17 @@ package edu.hm.api; /*
  * with IntelliJ IDEA 2017.1.1
  */
 
+import sun.misc.BASE64Encoder;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
 public class User {
     private final String username;
-    private final String password;
+    private String password;
 
     public User()
     {
@@ -15,8 +23,9 @@ public class User {
     }
 
     public User(String username, String password) {
+        setPassword(password);
+        //TODO: hash password
         this.username = username;
-        this.password = password;
     }
 
     public String getUsername() {
@@ -27,6 +36,29 @@ public class User {
         return password;
     }
 
+    public User setPassword(String password)
+    {
+        this.password = sha256HashValue(password);
+        return this;
+    }
+
+    public static String sha256HashValue(String string)
+    {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e.getCause());
+        }
+        digest.update(string.getBytes(StandardCharsets.UTF_8));
+        return String.format("%064x", new java.math.BigInteger(1, digest.digest()));
+    }
+
+    public boolean equalsHashedPassword(String clearPassword)
+    {
+       return sha256HashValue(clearPassword).equals(getPassword());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -34,8 +66,7 @@ public class User {
 
         User user = (User) o;
 
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
-        return password != null ? password.equals(user.password) : user.password == null;
+        return (username != null ? username.equals(user.username) : user.username == null) && (password != null ? password.equals(user.password) : user.password == null);
     }
 
     @Override
