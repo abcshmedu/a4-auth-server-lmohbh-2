@@ -72,7 +72,7 @@ public class AuthenticationServerService implements AuthenticationServer {
                 .sign(algorithm);
         DATA_STORAGE.replace(userToAccess,token);
 
-        return AuthenticationServerResult.Validated.setPayload(token);
+        return AuthenticationServerResult.TokenCreated.setPayload(token);
     }
 
     @Override

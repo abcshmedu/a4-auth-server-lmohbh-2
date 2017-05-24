@@ -64,7 +64,11 @@ public class User {
 
         User user = (User) o;
 
-        return (username != null ? username.equals(user.username) : user.username == null) && (password != null ? password.equals(user.password) : user.password == null);
+        return (username != null
+                ? username.equals(user.username)
+                : user.username == null) && (password != null
+                ? password.equals(user.password)
+                : user.password == null);
     }
 
     @Override

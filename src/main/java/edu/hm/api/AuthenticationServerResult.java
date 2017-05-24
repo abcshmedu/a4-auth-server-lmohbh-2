@@ -19,7 +19,8 @@ public enum AuthenticationServerResult {
     UserNotExisting("User with username not existing",Response.Status.BAD_REQUEST),
     InvalidPassword("Invalid Password",Response.Status.BAD_REQUEST),
     EmptyToken("No Token in Header, expected Header field: Authorization: <Token>",Response.Status.BAD_REQUEST),
-    TokenInvalidated("Successfully invalidated",Response.Status.OK);
+    TokenInvalidated("Successfully invalidated",Response.Status.OK),
+    TokenCreated("Token successfuly created",Response.Status.CREATED);
 
     private final String message;
     private final Response.Status status;

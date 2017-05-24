@@ -11,16 +11,6 @@ import static org.junit.Assert.*;
 * with IntelliJ IDEA 2017.1.1
 */
 public class UserTest {
-    @Test(timeout = 300)
-    public void testGetUsername() {
-        fail();
-    }
-
-    @Test(timeout = 300)
-    public void testGetPassword() {
-        fail();
-    }
-
     @Test
     public void testSha256HashValue()
     {
@@ -31,13 +21,13 @@ public class UserTest {
     @Test(timeout = 300)
     public void testEqualsHashedPasswordOverNonEmptyConstructor() {
         User user = new User("testuser","testpassword123");
-        assertTrue(user.equalsHashedPassword("testpassword123"));
+        assertTrue(user.equalsHashedPassword("b55c8792d1ce458e279308835f8a97b580263503e76e1998e279703e35ad0c2e"));
     }
 
     @Test(timeout = 300)
     public void testEqualsHashedPasswordOverEmptyConstructor() {
         User user = new User();
         user.setPassword("testpassword123");
-        assertTrue(user.equalsHashedPassword("testpassword123"));
+        assertTrue(user.equalsHashedPassword("b55c8792d1ce458e279308835f8a97b580263503e76e1998e279703e35ad0c2e"));
     }
 }
