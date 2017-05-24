@@ -6,7 +6,7 @@ package edu.hm.api;/*
  *
  */
 
-public interface AuthenticationServer {
+interface AuthenticationServer {
 
     AuthenticationServerResult createUser(User userToCreate);
 

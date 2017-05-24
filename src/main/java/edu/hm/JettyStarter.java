@@ -10,11 +10,11 @@ import org.eclipse.jetty.webapp.WebAppContext;
  *
  * @author <a mailto:axel.boettcher@hm.edu>Axel B&ouml;ttcher</a>
  */
-public class JettyStarter {
+class JettyStarter {
 
-    public static final String APP_URL = "/";
-    public static final int PORT = 8083;
-    public static final String WEBAPP_DIR = "./src/main/webapp/";
+    private static final String APP_URL = "/";
+    private static final int PORT = 8083;
+    private static final String WEBAPP_DIR = "./src/main/webapp/";
 
     /**
      * Deploy local directories using Jetty without needing a container-based deployment.

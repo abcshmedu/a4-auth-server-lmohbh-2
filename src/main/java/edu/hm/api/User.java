@@ -54,7 +54,7 @@ public class User {
 
     public boolean equalsHashedPassword(String clearPassword)
     {
-       return sha256HashValue(clearPassword).equals(getPassword());
+       return clearPassword.equals(getPassword());
     }
 
     @Override

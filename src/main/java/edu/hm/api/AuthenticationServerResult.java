@@ -7,7 +7,6 @@ package edu.hm.api;/*
  */
 
 import org.json.JSONObject;
-
 import javax.ws.rs.core.Response;
 
 public enum AuthenticationServerResult {
@@ -48,7 +47,7 @@ public enum AuthenticationServerResult {
      * String message of the reason why this response occurred.
      * @return User readable string
      */
-    public String getMessage() {
+    private String getMessage() {
         return message;
     }
 
@@ -64,7 +63,7 @@ public enum AuthenticationServerResult {
                 .put("Payload",this.getPayload()).toString();
     }
 
-    public String getPayload() {
+    private String getPayload() {
         return payload;
     }
 

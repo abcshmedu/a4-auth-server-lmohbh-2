@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AuthenticationServerService implements AuthenticationServer {
-    public static Map<User,String> DATA_STORAGE = new HashMap<>();
-    private static String SECRET = "LMOHBH20171527";
+    private static final Map<User,String> DATA_STORAGE = new HashMap<>();
+    private static final String SECRET = "LMOHBH20171527";
 
     @Override
     public AuthenticationServerResult createUser(User userToCreate) {
@@ -68,7 +68,7 @@ public class AuthenticationServerService implements AuthenticationServer {
         }
 
         String token = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 1000))
                 .sign(algorithm);
         DATA_STORAGE.replace(userToAccess,token);
 
@@ -80,7 +80,7 @@ public class AuthenticationServerService implements AuthenticationServer {
         if (token == null)
             return AuthenticationServerResult.EmptyToken;
 
-        if (DATA_STORAGE.entrySet().stream().filter(es -> es.getValue().equals(token)).count() == 0)
+        if (DATA_STORAGE.entrySet().stream().filter(es -> token.equals(es.getValue())).count() == 0)
             return AuthenticationServerResult.NoValidToken;
 
         Algorithm algorithm = null;
