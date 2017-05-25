@@ -9,7 +9,13 @@ package edu.hm.api;/*
 import org.json.JSONObject;
 import javax.ws.rs.core.Response;
 
+/**
+ * Implementation of Results for Authentication Server Exceptions.
+ * @author Hauser Oliver, Heunke Sebastian, Marckmiller Lukas
+ * @version 1.2
+ */
 public enum AuthenticationServerResult {
+    //Status Messages for Authentication REST API
     AllRight("Your request was correct. Like that!", Response.Status.OK),
     TokenExpired("Token expired",Response.Status.BAD_REQUEST),
     NoValidToken("No valid token.",Response.Status.BAD_REQUEST),
@@ -57,6 +63,10 @@ public enum AuthenticationServerResult {
         return this.message;
     }
 
+    /**
+     * Method can be used to parse the result object to a JSONString.
+     * @return result as JSON String.
+     */
     public String toJSONString() {
         return new JSONObject()
                 .put("Status",this.getStatus().getStatusCode())

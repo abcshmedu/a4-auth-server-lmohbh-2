@@ -11,6 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Data Structure for user object.
+ * @author  Lukas Marckmiller
+ * @version 1.2
+ */
 public class User {
     private final String username;
     private String password;
@@ -34,12 +39,24 @@ public class User {
         return password;
     }
 
+    /**
+     * Setter for Hashing the password.
+     * @param password password as clear String
+     * @return SHA256 Hashed password
+     */
     public User setPassword(String password)
     {
         this.password = sha256HashValue(password);
         return this;
     }
 
+    //SHA256 Algorithm
+
+    /**
+     * Creates a SHA256 value of a String var.
+     * @param string some string
+     * @return SHA256 hashed String
+     */
     public static String sha256HashValue(String string)
     {
         MessageDigest digest = null;
@@ -49,6 +66,7 @@ public class User {
             throw new RuntimeException(e.getCause());
         }
         digest.update(string.getBytes(StandardCharsets.UTF_8));
+
         return String.format("%064x", new java.math.BigInteger(1, digest.digest()));
     }
 
@@ -57,6 +75,7 @@ public class User {
        return clearPassword.equals(getPassword());
     }
 
+    //Equals and Hashcode needed because User objects stored in Hashmap, identifying the objects in map with equals method
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

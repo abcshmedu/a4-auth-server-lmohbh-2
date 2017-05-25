@@ -9,6 +9,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Implements the REST API for the Authentication Server.
+ * @author Hauser Oliver, Heunke Sebastian, Marckmiller Lukas
+ * @version 1.2
+ */
 @Path("a4")
 public class AuthenticationServerController {
     private final AuthenticationServerService authService;
