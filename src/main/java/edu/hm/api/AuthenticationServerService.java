@@ -40,8 +40,9 @@ public class AuthenticationServerService implements AuthenticationServer {
 
     @Override
     public AuthenticationServerResult createUser(User userToCreate) {
+        final String emptyPassword = User.sha256HashValue("");
         //Check if username and password not missing
-        if (userToCreate.getUsername().equals("") || userToCreate.getPassword().equals("")) {
+        if (userToCreate.getUsername().equals("") || userToCreate.getPassword().equals(emptyPassword)) {
             return AuthenticationServerResult.UserOrPasswordMissing;
         }
 
@@ -61,7 +62,8 @@ public class AuthenticationServerService implements AuthenticationServer {
     @Override
     public AuthenticationServerResult createToken(User userToAccess) {
         //Check if username and password not missing
-        if (userToAccess.getUsername().equals("") | userToAccess.getPassword().equals("")) {
+        final String emptyPassword = User.sha256HashValue("");
+        if (userToAccess.getUsername().equals("") | userToAccess.getPassword().equals(emptyPassword)) {
             return AuthenticationServerResult.UserOrPasswordMissing;
         }
 
