@@ -18,7 +18,9 @@ import javax.ws.rs.core.Response;
 @Path("a4")
 public class AuthenticationServerController {
 
-    private final AuthenticationServerService authService;
+    private static final int OK = 200;
+
+    private final AuthenticationServer authService;
 
     /**
      * Default Constructor.
@@ -31,7 +33,7 @@ public class AuthenticationServerController {
      * Constructor.
      * @param authService AuthenticationServerService to work with
      */
-    public AuthenticationServerController(AuthenticationServerService authService) {
+    public AuthenticationServerController(AuthenticationServer authService) {
         this.authService = authService;
     }
 
@@ -73,7 +75,7 @@ public class AuthenticationServerController {
     @Path("token")
     public Response validateToken(@HeaderParam("Authorization") String token) {
         AuthenticationServerResult result = authService.validateToken(token);
-        return Response.status(200).entity(result.toJSONString()).build();
+        return Response.status(OK).entity(result.toJSONString()).build();
     }
 
     /**

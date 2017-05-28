@@ -2,10 +2,10 @@
 //No reason to java doc test methods
 package edu.hm.api;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.Response;
@@ -23,11 +23,12 @@ import static org.mockito.Mockito.when;
 public class AuthenticationServerControllerTest {
 
     private AuthenticationServerController sut = new AuthenticationServerController();
-    private AuthenticationServerService serviceMock;
+    private AuthenticationServer serviceMock;
+    private final AuthenticationServerService aSS = new AuthenticationServerService();
 
     @Before
     public void setUp() {
-        serviceMock = mock(AuthenticationServerService.class);
+        serviceMock = mock(AuthenticationServer.class);
         sut = new AuthenticationServerController(serviceMock);
     }
 
@@ -111,43 +112,18 @@ public class AuthenticationServerControllerTest {
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
     }
 
-
-    //validateToken
+    //validate token
     @Test(timeout = 1000)
-    public void validateTokenTokenIsNotNull()
-    {
-        when(serviceMock.validateToken(null)).thenReturn(AuthenticationServerResult.EmptyToken);
-        Response result = sut.validateToken(null);
-        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
-    }
-
-    @Test(timeout = 1000)
-    public void validateTokenTokenIsNotInDatabase()
-    {
-        when(serviceMock.validateToken("WannaCry")).thenReturn(AuthenticationServerResult.NoValidToken);
-        Response result = sut.validateToken("WannaCry");
-        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
-    }
-
-    @Test(timeout = 1000)
-    public void validateTokenTokenIsValidated()
+    public void validateTokenTokenIsValid()
     {
         User user = new User("user","password");
-        String token = sut.getToken(user).getHeaderString("Authorization");
+        String token = aSS.createToken(user).getPayload();
         when(serviceMock.validateToken(token)).thenReturn(AuthenticationServerResult.Validated);
         Response result = sut.validateToken(token);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), result.getStatus());
     }
 
-    //invalidateToken
-    @Test(timeout = 1000)
-    public void invalidateTokenTokenIsNotNull()
-    {
-        when(serviceMock.invalidateToken(null)).thenReturn(AuthenticationServerResult.EmptyToken);
-        Response result = sut.invalidateToken(null);
-        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
-    }
-
+    //invalidate token
     @Test(timeout = 1000)
     public void invalidateTokenTokenIsNotInDatabase()
     {
@@ -160,7 +136,7 @@ public class AuthenticationServerControllerTest {
     public void invalidateTokenTokenIsInvalidated()
     {
         User user = new User("user","password");
-        String token = sut.getToken(user).getHeaderString("Authorization");
+        String token = aSS.createToken(user).getPayload();
         when(serviceMock.invalidateToken(token)).thenReturn(AuthenticationServerResult.TokenInvalidated);
         Response result = sut.invalidateToken(token);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), result.getStatus());

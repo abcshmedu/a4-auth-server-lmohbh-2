@@ -57,7 +57,7 @@ public class AuthenticationServerServiceTest {
         assertEquals(AuthenticationServerResult.UserOrPasswordMissing,aSS.createToken(user));
     }
 
-    @Test(timeout = 4000)
+    @Test(timeout = 1000)
     public void createTokenPasswordIsNotEmpty()
     {
         final AuthenticationServerService aSS = new AuthenticationServerService();
@@ -73,7 +73,7 @@ public class AuthenticationServerServiceTest {
         assertEquals(AuthenticationServerResult.UserNotExisting,aSS.createToken(user));
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 2000)
     public void createTokenIsSuccessful()
     {
         final AuthenticationServerService aSS = new AuthenticationServerService();
@@ -134,7 +134,6 @@ public class AuthenticationServerServiceTest {
     {
         final AuthenticationServerService aSS = new AuthenticationServerService();
         final User user = new User("user","password");
-        final String token = aSS.createToken(user).toJSONString();
         assertEquals(AuthenticationServerResult.TokenInvalidated,aSS.invalidateToken(aSS.createToken(user).getPayload()));
     }
 
