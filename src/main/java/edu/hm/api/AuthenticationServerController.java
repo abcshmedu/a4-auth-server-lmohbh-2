@@ -22,6 +22,11 @@ public class AuthenticationServerController {
          authService = new AuthenticationServerService();
     }
 
+    public AuthenticationServerController(AuthenticationServerService authService)
+    {
+        this.authService = authService;
+    }
+
     @POST
     @Path("user")
     @Consumes(MediaType.APPLICATION_JSON)

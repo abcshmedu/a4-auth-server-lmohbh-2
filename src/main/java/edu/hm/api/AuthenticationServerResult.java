@@ -26,7 +26,7 @@ public enum AuthenticationServerResult {
     InvalidPassword("Invalid Password",Response.Status.BAD_REQUEST),
     EmptyToken("No Token in Header, expected Header field: Authorization: <Token>",Response.Status.BAD_REQUEST),
     TokenInvalidated("Successfully invalidated",Response.Status.OK),
-    TokenCreated("Token successfuly created",Response.Status.CREATED);
+    TokenCreated("Token successfully created",Response.Status.CREATED);
 
     private final String message;
     private final Response.Status status;
@@ -74,7 +74,7 @@ public enum AuthenticationServerResult {
                 .put("Payload",this.getPayload()).toString();
     }
 
-    private String getPayload() {
+    public String getPayload() {
         return payload;
     }
 

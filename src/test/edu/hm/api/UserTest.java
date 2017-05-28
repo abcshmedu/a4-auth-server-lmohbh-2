@@ -1,3 +1,6 @@
+// CHECKSTYLE:OFF
+//No reason to java doc test methods
+
 package edu.hm.api;
 
 import org.junit.Test;
