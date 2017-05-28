@@ -11,52 +11,80 @@ import javax.ws.rs.core.Response;
 
 /**
  * Implements the REST API for the Authentication Server.
+ *
  * @author Hauser Oliver, Heunke Sebastian, Marckmiller Lukas
  * @version 1.2
  */
 @Path("a4")
 public class AuthenticationServerController {
+
     private final AuthenticationServerService authService;
 
+    /**
+     * Default Constructor.
+     */
     public AuthenticationServerController() {
-         authService = new AuthenticationServerService();
+        authService = new AuthenticationServerService();
     }
 
-    public AuthenticationServerController(AuthenticationServerService authService)
-    {
+    /**
+     * Constructor.
+     * @param authService AuthenticationServerService to work with
+     */
+    public AuthenticationServerController(AuthenticationServerService authService) {
         this.authService = authService;
     }
 
+    /**
+     * Create new User with username and password. No pattern for password, accept each.
+     *
+     * @param userToCreate User Object with username and password
+     * @return Returns an AuthenticationServerResult with certain Status code.
+     */
     @POST
     @Path("user")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(User userToCreate)
-    {
+    public Response createUser(User userToCreate) {
         AuthenticationServerResult result = authService.createUser(userToCreate);
         return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }
 
+    /**
+     * Create Token for user given as param. Use a JWT Token with Expire Date and Secret symmetric algorithm.
+     *
+     * @param userToAccess User Object with username and password
+     * @return Returns an AuthenticationServerResult with certain Status code and Token in Payload if successfully created.
+     */
     @POST
     @Path("token")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getToken(User userToAccess)
-    {
+    public Response getToken(User userToAccess) {
         AuthenticationServerResult result = authService.createToken(userToAccess);
         return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }
 
+    /**
+     * Try to validate token. Check if user owns this token and validate.
+     *
+     * @param token the JWT Token as String
+     * @return Returns an AuthenticationServerResult with certain Status code.
+     */
     @GET
     @Path("token")
-    public Response validateToken(@HeaderParam("Authorization") String token)
-    {
+    public Response validateToken(@HeaderParam("Authorization") String token) {
         AuthenticationServerResult result = authService.validateToken(token);
         return Response.status(200).entity(result.toJSONString()).build();
     }
 
+    /**
+     * Invalidate the current Token, the token is gonna be deleted from the database.
+     *
+     * @param token the JWT Token as String
+     * @return Returns an AuthenticationServerResult with certain Status code.
+     */
     @PUT
     @Path("token")
-    public Response invalidateToken(@HeaderParam("Authorization") String token)
-    {
+    public Response invalidateToken(@HeaderParam("Authorization") String token) {
         AuthenticationServerResult result = authService.invalidateToken(token);
         return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }

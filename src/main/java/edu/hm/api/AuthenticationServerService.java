@@ -22,21 +22,26 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of Authentication Server.
+ *
  * @author Hauser Oliver, Heunke Sebastian, Marckmiller Lukas
  * @version 1.2
  * @see edu.hm.api.AuthenticationServer
  */
 public class AuthenticationServerService implements AuthenticationServer {
+
+    private static final int SECOND = 1000;
+    private static final int EXPIRE_TIME = 120;
+    private static final int LEEWAY = 5;
+
     //Current Data Storage
-    private static final Map<User,String> DATA_STORAGE = new HashMap<>();
+    private static final Map<User, String> DATA_STORAGE = new HashMap<>();
     //Secret for the JWT Creation Alogrithm. Only used in this class.
     private static final String SECRET = "LMOHBH20171527";
 
     @Override
     public AuthenticationServerResult createUser(User userToCreate) {
         //Check if username and password not missing
-        if (userToCreate.getUsername().equals("") || userToCreate.getPassword().equals(""))
-        {
+        if (userToCreate.getUsername().equals("") || userToCreate.getPassword().equals("")) {
             return AuthenticationServerResult.UserOrPasswordMissing;
         }
 
@@ -44,35 +49,35 @@ public class AuthenticationServerService implements AuthenticationServer {
         if (DATA_STORAGE.keySet().stream()
                 .map(User::getUsername)
                 .filter(un -> un.equals(userToCreate.getUsername()))
-                .count() != 0)
-        {
+                .count() != 0) {
             return AuthenticationServerResult.UserAlreadyExists;
         }
 
         //insert to data structure
-        DATA_STORAGE.put(userToCreate,null);
+        DATA_STORAGE.put(userToCreate, null);
         return AuthenticationServerResult.AllRight;
     }
 
     @Override
     public AuthenticationServerResult createToken(User userToAccess) {
         //Check if username and password not missing
-        if (userToAccess.getUsername().equals("") | userToAccess.getPassword().equals(""))
-        {
+        if (userToAccess.getUsername().equals("") | userToAccess.getPassword().equals("")) {
             return AuthenticationServerResult.UserOrPasswordMissing;
         }
 
         //check if given user exists in data storage
         if (DATA_STORAGE.keySet().stream()
-                .filter(u -> u.getUsername().equals(userToAccess.getUsername())).count() == 0)
+                .filter(u -> u.getUsername().equals(userToAccess.getUsername())).count() == 0) {
             return AuthenticationServerResult.UserNotExisting;
+        }
 
         //check if given password equals password for user in database
-        if(DATA_STORAGE.keySet().stream()
+        if (DATA_STORAGE.keySet().stream()
                 .filter(u -> u.getUsername().equals(userToAccess.getUsername()))
                 .filter(u -> u.equalsHashedPassword(userToAccess.getPassword()))
-                .count() == 0)
+                .count() == 0) {
             return AuthenticationServerResult.InvalidPassword;
+        }
 
         //define algorithm for jwt creation
         Algorithm algorithm = null;
@@ -84,10 +89,10 @@ public class AuthenticationServerService implements AuthenticationServer {
 
         //create jwt token, lifetime = 120 sec
         String token = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + 120 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME * SECOND))
                 .sign(algorithm);
         //set token for user in datastorage, this is needed either for invalidation of the token or to guarantee exactly one token per user.
-        DATA_STORAGE.replace(userToAccess,token);
+        DATA_STORAGE.replace(userToAccess, token);
 
         return AuthenticationServerResult.TokenCreated.setPayload(token);
     }
@@ -95,12 +100,14 @@ public class AuthenticationServerService implements AuthenticationServer {
     @Override
     public AuthenticationServerResult validateToken(String token) {
         //check if token is empty
-        if (token == null)
+        if (token == null) {
             return AuthenticationServerResult.EmptyToken;
+        }
 
         //check if token exists in Database, to avoid self created tokens or usage of none expired old tokens.
-        if (DATA_STORAGE.entrySet().stream().filter(es -> token.equals(es.getValue())).count() == 0)
+        if (DATA_STORAGE.entrySet().stream().filter(es -> token.equals(es.getValue())).count() == 0) {
             return AuthenticationServerResult.NoValidToken;
+        }
 
         Algorithm algorithm = null;
         try {
@@ -110,17 +117,15 @@ public class AuthenticationServerService implements AuthenticationServer {
         }
 
         //verify token with leeway of 5 sec
-        JWTVerifier jwtVerifier = JWT.require(algorithm).acceptLeeway(5).build();
+        JWTVerifier jwtVerifier = JWT.require(algorithm).acceptLeeway(LEEWAY).build();
         try {
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
             System.out.println(decodedJWT.getSignature());
 
-        } catch(TokenExpiredException teE)
-        {
+        } catch (TokenExpiredException teE) {
             return AuthenticationServerResult.TokenExpired;
 
-        } catch(JWTVerificationException jve)
-        {
+        } catch (JWTVerificationException jve) {
             return AuthenticationServerResult.NoValidToken;
         }
 
@@ -129,11 +134,11 @@ public class AuthenticationServerService implements AuthenticationServer {
     }
 
     @Override
-    public AuthenticationServerResult invalidateToken(String token)
-    {
+    public AuthenticationServerResult invalidateToken(String token) {
         //check if token is empty
-        if (token == null)
+        if (token == null) {
             return AuthenticationServerResult.EmptyToken;
+        }
 
         //check if token exists in data storage
         final Set<Map.Entry<User, String>> dataStorageSet =
@@ -141,11 +146,11 @@ public class AuthenticationServerService implements AuthenticationServer {
                         .filter(ue -> token.equals(ue.getValue()))
                         .collect(Collectors.toSet());
 
-        if (dataStorageSet.size() == 0)
+        if (dataStorageSet.size() == 0) {
             return AuthenticationServerResult.NoValidToken;
-        else if (dataStorageSet.size() > 1)
+        } else if (dataStorageSet.size() > 1) {
             throw new RuntimeException("Token " + token + " exists more than once in data storage, critical exception!");
-        //invalidate token
+        } //invalidate token
         else {
             DATA_STORAGE.replace(dataStorageSet.stream().map(Map.Entry::getKey).findFirst().get(), null);
             return AuthenticationServerResult.TokenInvalidated;
