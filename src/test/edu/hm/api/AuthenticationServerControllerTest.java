@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.Response;
@@ -23,15 +25,15 @@ import static org.mockito.Mockito.when;
 public class AuthenticationServerControllerTest {
 
     private AuthenticationServerController sut = new AuthenticationServerController();
-    private AuthenticationServer serviceMock;
+    @Mock
+    private AuthenticationServer<AuthenticationServerResult> serviceMock;
     private final AuthenticationServerService aSS = new AuthenticationServerService();
 
     @Before
     public void setUp() {
-        serviceMock = mock(AuthenticationServer.class);
+        serviceMock = (AuthenticationServer<AuthenticationServerResult>) Mockito.mock(AuthenticationServer.class);
         sut = new AuthenticationServerController(serviceMock);
     }
-
 
     //createUser
     @Test(timeout = 1000)
@@ -72,7 +74,7 @@ public class AuthenticationServerControllerTest {
     {
         User user = new User("", "password");
         when(serviceMock.createToken(user)).thenReturn(AuthenticationServerResult.UserOrPasswordMissing);
-        Response result = sut.getToken(user);
+        Response result = sut.createToken(user);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
     }
 
@@ -81,7 +83,7 @@ public class AuthenticationServerControllerTest {
     {
         User user = new User("user", "");
         when(serviceMock.createToken(user)).thenReturn(AuthenticationServerResult.UserOrPasswordMissing);
-        Response result = sut.getToken(user);
+        Response result = sut.createToken(user);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
     }
 
@@ -90,7 +92,7 @@ public class AuthenticationServerControllerTest {
     {
         User user = new User("resu", "drowssap");
         when(serviceMock.createToken(user)).thenReturn(AuthenticationServerResult.UserNotExisting);
-        Response result = sut.getToken(user);
+        Response result = sut.createToken(user);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
     }
 
@@ -99,7 +101,7 @@ public class AuthenticationServerControllerTest {
     {
         User user = new User("user", "password");
         when(serviceMock.createToken(user)).thenReturn(AuthenticationServerResult.TokenCreated);
-        Response result = sut.getToken(user);
+        Response result = sut.createToken(user);
         Assert.assertEquals(Response.Status.CREATED.getStatusCode(), result.getStatus());
     }
 
@@ -108,7 +110,7 @@ public class AuthenticationServerControllerTest {
     {
         User user = new User("user", "drowssap");
         when(serviceMock.createToken(user)).thenReturn(AuthenticationServerResult.InvalidPassword);
-        Response result = sut.getToken(user);
+        Response result = sut.createToken(user);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
     }
 

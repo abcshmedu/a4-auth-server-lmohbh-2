@@ -16,11 +16,11 @@ import javax.ws.rs.core.Response;
  * @version 1.2
  */
 @Path("a4")
-public class AuthenticationServerController {
+public class AuthenticationServerController implements AuthenticationServer<Response> {
 
     private static final int OK = 200;
 
-    private final AuthenticationServer authService;
+    private final AuthenticationServer<AuthenticationServerResult> authService;
 
     /**
      * Default Constructor.
@@ -33,7 +33,7 @@ public class AuthenticationServerController {
      * Constructor.
      * @param authService AuthenticationServerService to work with
      */
-    public AuthenticationServerController(AuthenticationServer authService) {
+    public AuthenticationServerController(AuthenticationServer<AuthenticationServerResult> authService) {
         this.authService = authService;
     }
 
@@ -60,7 +60,7 @@ public class AuthenticationServerController {
     @POST
     @Path("token")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getToken(User userToAccess) {
+    public Response createToken(User userToAccess) {
         AuthenticationServerResult result = authService.createToken(userToAccess);
         return Response.status(result.getStatus()).entity(result.toJSONString()).build();
     }

@@ -15,7 +15,7 @@ package edu.hm.api;
  * @author Hauser Oliver, Heunke Sebastian, Marckmiller Lukas
  * @version 1.2
  */
-interface AuthenticationServer {
+interface AuthenticationServer<T> {
 
     /**
      * Create new User with username and password. No pattern for password, accept each.
@@ -23,7 +23,7 @@ interface AuthenticationServer {
      * @param userToCreate User Object with username and password
      * @return Returns an AuthenticationServerResult with certain Status code.
      */
-    AuthenticationServerResult createUser(User userToCreate);
+    T createUser(User userToCreate);
 
     /**
      * Create Token for user given as param. Use a JWT Token with Expire Date and Secret symmetric algorithm.
@@ -31,7 +31,7 @@ interface AuthenticationServer {
      * @param userToAccess User Object with username and password
      * @return Returns an AuthenticationServerResult with certain Status code and Token in Payload if successfully created.
      */
-    AuthenticationServerResult createToken(User userToAccess);
+    T createToken(User userToAccess);
 
     /**
      * Try to validate token. Check if user owns this token and validate.
@@ -39,7 +39,7 @@ interface AuthenticationServer {
      * @param token the JWT Token as String
      * @return Returns an AuthenticationServerResult with certain Status code.
      */
-    AuthenticationServerResult validateToken(String token);
+    T validateToken(String token);
 
     /**
      * Invalidate the current Token, the token is gonna be deleted from the database.
@@ -47,5 +47,5 @@ interface AuthenticationServer {
      * @param token the JWT Token as String
      * @return Returns an AuthenticationServerResult with certain Status code.
      */
-    AuthenticationServerResult invalidateToken(String token);
+    T invalidateToken(String token);
 }

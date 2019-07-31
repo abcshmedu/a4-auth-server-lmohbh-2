@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @version 1.2
  * @see edu.hm.api.AuthenticationServer
  */
-public class AuthenticationServerService implements AuthenticationServer {
+public class AuthenticationServerService implements AuthenticationServer<AuthenticationServerResult> {
 
     private static final int SECOND = 1000;
     private static final int EXPIRE_TIME = 120;
